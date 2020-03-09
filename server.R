@@ -25,7 +25,7 @@ server <- function(input, output) {
     # 2. Its output type is a plot
     output$boxPlot <- renderPlot({
         
-        ggplot(dataset(), aes(as.factor(cname))) + geom_bar(aes(fill=sponor, weight=hour), position = "stack") +
+        ggplot(dataset()[which(dataset()$x3==input$datasetSelector),], aes(as.factor(x1))) + geom_bar(aes(fill=x5, weight=x16), position = "stack") +
             scale_y_continuous(breaks=seq(0,64,8)) +
             theme(text = element_text(family = 'SimHei', face = "bold"),legend.text = element_text(size=10))+
             labs(fill="Sponsor") + ylab("Hour") + xlab(NULL) +
@@ -37,10 +37,13 @@ server <- function(input, output) {
     #动态创建个数据框
     dataset <- reactive({
         readdata <- read_excel(input$xlsx$datapath)
-        test_t <- readdata[which(readdata$GRP==input$datasetSelector),]
-        return(test_t)
+        cnames=paste("x",1:length(readdata),sep="")
+        colnames(readdata)=cnames
+        return(readdata)
         
     })
+    
+    
     
     #动态创建个链表
     fileOptions <- reactiveValues(currentOptions=c())
@@ -49,7 +52,7 @@ server <- function(input, output) {
     observeEvent(input$xlsx, {
         fileOptions$currentOptions = c(
             fileOptions$currentOptions, 
-            unique(read_excel(input$xlsx$datapath)$GRP)
+            unique(dataset()$x3)
         )
     })
     
