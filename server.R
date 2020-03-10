@@ -28,6 +28,7 @@ server <- function(input, output) {
         ggplot(dataset(), aes(x=中文名, fill=申办方, weight=工时)) + geom_bar(stat="count", position = "stack") +
             geom_text(stat='count',aes(label=..count..), position=position_stack(0.5)) +
             scale_y_continuous(breaks=seq(0,64,8)) +
+            guides(fill = guide_legend(reverse = T)) +
             theme(text = element_text(family = 'simhei', face = "bold"),legend.text = element_text(size=10))+
             labs(fill="Sponsor") + ylab("Hour") + xlab(NULL) + coord_flip() +
             theme(axis.text.x = element_text(size = 12),axis.text.y = element_text(size = 12)) +
@@ -41,6 +42,11 @@ server <- function(input, output) {
     #动态创建个数据框
     dataset <- reactive({
         readdata <- read_excel(input$xlsx$datapath)
+        
+        #处理申办方为NA的情况
+        order_sp <- c('not Bill hour',sort(unique(readdata$申办方)))
+        readdata$申办方[is.na(readdata$申办方)] <- 'not Bill hour'
+                 
         #cnames=paste("x",1:length(readdata),sep="")
         #colnames(readdata)=cnames
         dataend <- readdata[which(readdata$人员组别==input$datasetSelector),]
