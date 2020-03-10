@@ -25,7 +25,8 @@ server <- function(input, output) {
     # 2. Its output type is a plot
     output$boxPlot <- renderPlot({
         
-        ggplot(dataset(), aes(as.factor(中文名))) + geom_bar(aes(fill=申办方, weight=工时), position = "stack") +
+        ggplot(dataset(), aes(x=中文名, fill=申办方, weight=工时)) + geom_bar(stat="count", position = "stack") +
+            geom_text(stat='count',aes(label=..count..), position=position_stack(0.5)) +
             scale_y_continuous(breaks=seq(0,64,8)) +
             theme(text = element_text(family = 'simhei', face = "bold"),legend.text = element_text(size=10))+
             labs(fill="Sponsor") + ylab("Hour") + xlab(NULL) + coord_flip() +
