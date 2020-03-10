@@ -10,7 +10,7 @@
 library(readxl)
 library(ggplot2)
 library(shiny)
-
+library(scales)
 
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
@@ -27,7 +27,7 @@ server <- function(input, output) {
         
         ggplot(dataset(), aes(x=中文名, fill=申办方, weight=工时)) + geom_bar(stat="count", position = "stack") +
             geom_text(stat='count',aes(label=..count..), position=position_stack(0.5)) +
-            scale_y_continuous(breaks=breaks_width(8),expand = c(0,0)) +
+            scale_y_continuous(breaks=breaks_width(ybreak())) +
             guides(fill = guide_legend(reverse = T)) +
             theme(text = element_text(family = 'simhei', face = "bold"),legend.text = element_text(size=10))+
             labs(fill="Sponsor") + ylab("Hour") + xlab(NULL) + coord_flip() +
@@ -55,6 +55,13 @@ server <- function(input, output) {
         
     })
     
+    #根据Y轴最大值来判断坐标间隔
+    ybreak <- reactive({
+        sumhour <- aggregate(dataset()$工时, list(中文名 = dataset()$中文名), sum)
+        maxhour <- max(sumhour$x)
+        if (maxhour>80) {return(40)}
+        else {return(8)}
+    })
     
     
     #动态创建个链表
