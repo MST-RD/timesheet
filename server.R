@@ -25,11 +25,14 @@ server <- function(input, output) {
     # 2. Its output type is a plot
     output$boxPlot <- renderPlot({
         
-        ggplot(dataset()[which(dataset()$x3==input$datasetSelector),], aes(as.factor(x1))) + geom_bar(aes(fill=x5, weight=x16), position = "stack") +
+        ggplot(dataset(), aes(as.factor(中文名))) + geom_bar(aes(fill=申办方, weight=工时), position = "stack") +
             scale_y_continuous(breaks=seq(0,64,8)) +
-            theme(text = element_text(family = 'SimHei', face = "bold"),legend.text = element_text(size=10))+
-            labs(fill="Sponsor") + ylab("Hour") + xlab(NULL) +
-            theme(axis.text.x = element_text(size = 12),axis.text.y = element_text(size = 12)) + coord_flip()
+            theme(text = element_text(family = 'simhei', face = "bold"),legend.text = element_text(size=10))+
+            labs(fill="Sponsor") + ylab("Hour") + xlab(NULL) + coord_flip() +
+            theme(axis.text.x = element_text(size = 12),axis.text.y = element_text(size = 12)) +
+            geom_hline(yintercept = 40, linetype="dashed") +
+            theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+            
         
         
     })
@@ -37,9 +40,10 @@ server <- function(input, output) {
     #动态创建个数据框
     dataset <- reactive({
         readdata <- read_excel(input$xlsx$datapath)
-        cnames=paste("x",1:length(readdata),sep="")
-        colnames(readdata)=cnames
-        return(readdata)
+        #cnames=paste("x",1:length(readdata),sep="")
+        #colnames(readdata)=cnames
+        dataend <- readdata[which(readdata$人员组别==input$datasetSelector),]
+        return(dataend)
         
     })
     
@@ -52,7 +56,7 @@ server <- function(input, output) {
     observeEvent(input$xlsx, {
         fileOptions$currentOptions = c(
             fileOptions$currentOptions, 
-            unique(dataset()$x3)
+            unique(read_excel(input$xlsx$datapath)$人员组别)
         )
     })
     
