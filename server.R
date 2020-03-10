@@ -27,7 +27,7 @@ server <- function(input, output) {
         
         ggplot(dataset(), aes(x=中文名, fill=申办方, weight=工时)) + geom_bar(stat="count", position = "stack") +
             geom_text(stat='count',aes(label=..count..), position=position_stack(0.5)) +
-            scale_y_continuous(breaks=seq(0,64,8)) +
+            scale_y_continuous(breaks=breaks_width(8),expand = c(0,0)) +
             guides(fill = guide_legend(reverse = T)) +
             theme(text = element_text(family = 'simhei', face = "bold"),legend.text = element_text(size=10))+
             labs(fill="Sponsor") + ylab("Hour") + xlab(NULL) + coord_flip() +
@@ -38,6 +38,7 @@ server <- function(input, output) {
         
         
     })
+    #issue :breaks_width(8) or 40, 如果加上了取8或者取40的判断，则不需要expand = c(0,0)
     
     #动态创建个数据框
     dataset <- reactive({
