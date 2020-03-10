@@ -11,6 +11,7 @@ library(readxl)
 library(ggplot2)
 library(shiny)
 library(scales)
+library(RColorBrewer)
 
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
@@ -25,6 +26,31 @@ server <- function(input, output) {
     # 2. Its output type is a plot
     output$boxPlot <- renderPlot({
         
+        #Top9 sponsor and "not bill hour" specified color
+        top10  <- c("艾伯维", "Eli Lilly and Company", "Vertex", "嘉和生物", "卡德蒙", 
+                    "基石", "上海海和药物研究开发有限公司", "强生", "not Bill hour", "亿腾")
+        cols <- c("#8FBC94", "#4FB0C6", "#C65146", "#e97f02", "#99CCCC", 
+                  "#CCCC99", "#0099CC", "#FF6666", "#CC9966", "#336666")
+        top10_cols <- data.frame(top10,cols, stringsAsFactors = F)
+
+        #Get sponsor
+        sponsor <- unique(dataset()$申办方)
+        sponsor <- as.data.frame(sponsor)
+        
+        #Get color
+        sponsor_col <- merge(sponsor, top10_cols, by.x = "sponsor", by.y = "top10", all.x = T, sort = F) 
+        
+        #assign color
+        sp_colna_n <- length(unique(sponsor_col[is.na(sponsor_col$cols),]$sponsor))
+        getPalette <- colorRampPalette(brewer.pal(9, "Set1"))
+        sponsor_col[is.na(sponsor_col$cols),]$cols <- getPalette(sp_colna_n)
+        
+        #Get order color
+        sponsor_col <- sponsor_col[order(order_sp),]
+        rownames(sponsor_col) <- seq(1,nrow(sponsor_col),1)
+        col <- sponsor_col$cols
+        
+        
         ggplot(dataset(), aes(x=中文名, fill=申办方, weight=工时)) + geom_bar(stat="count", position = "stack") +
             geom_text(stat='count',aes(label=..count..), position=position_stack(0.5)) +
             scale_y_continuous(breaks=breaks_width(ybreak())) +
@@ -33,6 +59,7 @@ server <- function(input, output) {
             labs(fill="Sponsor") + ylab("Hour") + xlab(NULL) + coord_flip() +
             theme(axis.text.x = element_text(size = 12),axis.text.y = element_text(size = 12)) +
             geom_hline(yintercept = 40, linetype="dashed") +
+            scale_fill_manual(values = col) +
             theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
             
         
