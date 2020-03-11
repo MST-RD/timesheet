@@ -4,16 +4,16 @@ library(datasets)
 options(shiny.usecairo = FALSE)
 
 #指定排序, sp=指定排序的申办方(赋值的顺序也有关系), left=在左边, right=在右边
-specord <- data.frame(sp = c("RD", "Overhead", "Leave"), 
-                      type = c("left", "right", "right"), 
+specord <- data.frame(sp = c("RD", "MST_Standards", "Overhead", "Leave"), 
+                      type = c("left", "left", "right", "right"), 
                       stringsAsFactors = F)
 
 #Top9 sponsor and "RD" "Overhead" "Leave" specified color
 top  <- c("艾伯维", "Eli Lilly and Company", "Vertex", "嘉和生物", "卡德蒙", 
-            "基石", "上海海和药物研究开发有限公司", "强生", "亿腾", "RD", 
+            "基石", "上海海和药物研究开发有限公司", "强生", "亿腾", "RD", "MST_Standards", 
             "Overhead", "Leave")
 cols <- c("royalblue4", "red", "blue4", "skyblue4", "green4", 
-          "darkred", "palegreen4", "deepskyblue4", "sandybrown", "mediumpurple4",
+          "darkred", "palegreen4", "deepskyblue4", "sandybrown", "mediumpurple4", "purple4"
           "dimgray","darkgray")
 top_cols <- data.frame(top,cols, stringsAsFactors = F)
 
