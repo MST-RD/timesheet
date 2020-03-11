@@ -74,7 +74,7 @@ server <- function(input, output) {
             
             #处理申办方为NA的情况        
             dataend$申办方[which(dataend$报价角色=="RD")] <- "RD"
-            dataend$申办方[is.na(dataend$申办方)] <- test_t$项目编号[is.na(dataend$申办方)]
+            dataend$申办方[is.na(dataend$申办方)] <- dataend$项目编号[is.na(dataend$申办方)]
             #重新排序申办方
             unq <- unique(dataend$申办方)
             specsp <- specord$sp[which(specord$sp%in%unq)]
