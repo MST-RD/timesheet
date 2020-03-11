@@ -31,7 +31,10 @@ ui <- fluidPage(
             tags$hr(),
             
             #Input: Select the group of group ----
-            uiOutput("checkbox")
+            uiOutput("checkbox"),
+            
+            #datalabel select
+            checkboxInput("barlabel","是否显示数字",TRUE)
             
         ),
         

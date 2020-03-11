@@ -29,7 +29,6 @@ server <- function(input, output) {
         {return(NULL)}
         else{
         ggplot(dataset()[[1]], aes(x=中文名, fill=申办方, weight=工时)) + geom_bar(stat="count", position = "stack") +
-            geom_text(stat='count',aes(label=..count..), position=position_stack(0.5)) +
             scale_y_continuous(breaks=breaks_width(ybreak())) +
             guides(fill = guide_legend(reverse = T)) +
             theme(text = element_text(family = 'simhei', face = "bold"),legend.text = element_text(size=10))+
@@ -37,13 +36,14 @@ server <- function(input, output) {
             theme(axis.text.x = element_text(size = 12),axis.text.y = element_text(size = 12)) +
             geom_hline(yintercept = 40, linetype="dashed") +
             scale_fill_manual(values = color()) +
-            theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+            theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank()) +
+            blabel()
         }
             
         
         
     })
-    #issue :breaks_width(8) or 40, 如果加上了取8或者取40的判断，则不需要expand = c(0,0)
+ 
     
     #动态创建个数据框
     dataset <- reactive({
@@ -102,6 +102,14 @@ server <- function(input, output) {
         return(col)
 
         })
+    
+    #barlabel
+    blabel <- reactive({ 
+        if (input$barlabel==TRUE)
+        {return(geom_text(stat='count',aes(label=..count..), position=position_stack(0.5)))}
+        else
+        {return(NULL)}
+    })
     
     
     #动态创建个链表
