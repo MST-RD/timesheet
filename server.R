@@ -39,7 +39,7 @@ server <- function(input, output) {
     mdate <- reactive({ 
         if (is.null(input$xlsx))
         {maxdate=Sys.Date()+10
-        mindata=Sys.Date()-10
+        mindate=Sys.Date()-10
         }
         else{
         maxdate <- max(read_excel(input$xlsx$datapath)$日期)
@@ -52,7 +52,7 @@ server <- function(input, output) {
     
     #创建动态时间选择栏
     output$daterange<-renderUI({
-        selectInput("dateSelector","Date range select:", 
+      dateRangeInput("dateSelector","Date range select:", 
                     start  = mdate()[[1]],
                     end    = mdate()[[2]],
                     min    = mdate()[[1]],
@@ -67,7 +67,7 @@ server <- function(input, output) {
         else{
             readdata <- read_excel(input$xlsx$datapath)     
             
-            readdata <- subset(readdata,input$dateSelector$start <=readdata$日期 & readdata$日期<=input$dateSelector$end)
+            readdata <- subset(readdata,input$dateSelector[1] <=readdata$日期 & readdata$日期<=input$dateSelector[2])
             #cnames=paste("x",1:length(readdata),sep="")
             #colnames(readdata)=cnames
             dataend <- readdata[which(readdata$人员组别==input$datasetSelector),]
