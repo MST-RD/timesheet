@@ -44,15 +44,17 @@ server <- function(input, output) {
     
     #动态创建个数据框
     dataset <- reactive({
-        readdata <- read_excel(input$xlsx$datapath)
-        #处理申办方为NA的情况
-        
-        order_sp <- c('not Bill hour',sort(unique(readdata$申办方)))
-        readdata$申办方[is.na(readdata$申办方)] <- 'not Bill hour'  
-        
+        readdata <- read_excel(input$xlsx$datapath)        
         #cnames=paste("x",1:length(readdata),sep="")
         #colnames(readdata)=cnames
         dataend <- readdata[which(readdata$人员组别==input$datasetSelector),]
+        
+         #处理申办方为NA的情况        
+        order_sp <- c('not Bill hour',sort(unique(dataend$申办方)))
+        dataend$申办方[is.na(dataend$申办方)] <- 'not Bill hour' 
+        #重新排序申办方
+        dataend$申办方 <- factor(dataend$申办方, levels=order_sp)
+        
         outdata <- list(dataend,order_sp)
         return(outdata)
         
