@@ -25,7 +25,9 @@ server <- function(input, output) {
     #    re-executed when inputs (input$bins) change
     # 2. Its output type is a plot
     output$boxPlot <- renderPlot({
-        
+        if (is.null(dataset()))
+        {return(NULL)}
+        else{
         ggplot(dataset()[[1]], aes(x=中文名, fill=申办方, weight=工时)) + geom_bar(stat="count", position = "stack") +
             geom_text(stat='count',aes(label=..count..), position=position_stack(0.5)) +
             scale_y_continuous(breaks=breaks_width(ybreak())) +
@@ -36,6 +38,7 @@ server <- function(input, output) {
             geom_hline(yintercept = 40, linetype="dashed") +
             scale_fill_manual(values = color()) +
             theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+        }
             
         
         
@@ -44,6 +47,9 @@ server <- function(input, output) {
     
     #动态创建个数据框
     dataset <- reactive({
+        if (is.null(input$xlsx))
+        {return(NULL)}
+        else{
         readdata <- read_excel(input$xlsx$datapath)        
         #cnames=paste("x",1:length(readdata),sep="")
         #colnames(readdata)=cnames
@@ -57,15 +63,20 @@ server <- function(input, output) {
         
         outdata <- list(dataend,order_sp)
         return(outdata)
+        }
         
     })
     
     #根据Y轴最大值来判断坐标间隔
     ybreak <- reactive({
+        if (is.null(dataset()))
+        {return(NULL)}
+        else{
         sumhour <- aggregate(dataset()[[1]]$工时, list(中文名 = dataset()[[1]]$中文名), sum)
         maxhour <- max(sumhour$x)
         if (maxhour>80) {return(40)}
         else {return(8)}
+        }
     })
     
     #color
