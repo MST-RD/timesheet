@@ -29,25 +29,24 @@ server <- function(input, output) {
         #Top9 sponsor and "not bill hour" specified color
         top10  <- c("艾伯维", "Eli Lilly and Company", "Vertex", "嘉和生物", "卡德蒙", 
                     "基石", "上海海和药物研究开发有限公司", "强生", "not Bill hour", "亿腾")
-        cols <- c("#8FBC94", "#4FB0C6", "#C65146", "#e97f02", "#99CCCC", 
-                  "#CCCC99", "#0099CC", "#FF6666", "#CC9966", "#336666")
+        cols <- c("royalblue4", "red", "blue4", "skyblue4", "green4", 
+                  "darkred", "palegreen4", "deepskyblue4", "dimgray", "sandybrown")
         top10_cols <- data.frame(top10,cols, stringsAsFactors = F)
 
         #Get sponsor
-        sponsor <- unique(dataset()$申办方)
-        sponsor <- as.data.frame(sponsor)
+        sponsor <- as.data.frame(order_sp)
         
         #Get color
-        sponsor_col <- merge(sponsor, top10_cols, by.x = "sponsor", by.y = "top10", all.x = T, sort = F) 
+        sponsor_col <- merge(sponsor, top10_cols, by.x = "order_sp", by.y = "top10", all.x = T, sort = F) 
         
         #assign color
-        sp_colna_n <- length(unique(sponsor_col[is.na(sponsor_col$cols),]$sponsor))
+        sp_colna_n <- length(sponsor_col[is.na(sponsor_col$cols),1])
         getPalette <- colorRampPalette(brewer.pal(9, "Set1"))
         sponsor_col[is.na(sponsor_col$cols),]$cols <- getPalette(sp_colna_n)
         
         #Get order color
-        sponsor_col <- sponsor_col[order(order_sp),]
-        rownames(sponsor_col) <- seq(1,nrow(sponsor_col),1)
+        sponsor_col$order_sp <- factor(sponsor_col$order_sp,level=rev(order_sp))
+        sponsor_col <- sponsor_col[order(sponsor_col$order_sp),]
         col <- sponsor_col$cols
         
         
