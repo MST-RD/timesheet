@@ -34,7 +34,10 @@ ui <- fluidPage(
             uiOutput("checkbox"),
             
             #datalabel select
-            checkboxInput("barlabel","是否显示数字",TRUE)
+            checkboxInput("barlabel","是否显示数字",TRUE),
+            
+            #Input: date range select ----
+            uiOutput("daterange")
             
         ),
         
