@@ -85,7 +85,7 @@ server <- function(input, output) {
         sponsor_col[is.na(sponsor_col$cols),]$cols <- getPalette(sp_colna_n)
         
         #Get order color
-        sponsor_col$order_sp <- factor(sponsor_col$order_sp,level=rev(order_sp))
+        sponsor_col$order_sp <- factor(sponsor_col$order_sp,level=order_sp)
         sponsor_col <- sponsor_col[order(sponsor_col$order_sp),]
         col <- sponsor_col$cols
         return(col)
