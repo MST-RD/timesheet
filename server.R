@@ -73,9 +73,16 @@ server <- function(input, output) {
             dataend <- readdata[which(readdata$人员组别==input$datasetSelector),]
             
             #处理申办方为NA的情况        
-            order_sp <- c('not Bill hour',sort(unique(dataend$申办方)))
-            dataend$申办方[is.na(dataend$申办方)] <- 'not Bill hour' 
+            dataend$申办方[which(dataend$报价角色=="RD")] <- "RD"
+            dataend$申办方[is.na(dataend$申办方)] <- test_t$项目编号[is.na(dataend$申办方)]
             #重新排序申办方
+            unq <- unique(dataend$申办方)
+            specsp <- specord$sp[which(specord$sp%in%unq)]
+            order_sp <- sort(unq[-which(unq%in%specsp)])
+            for (x in specsp) {
+              order_sp <- switch(specord$type[which(specord==x)], right = c(x, order_sp), 
+                                left = c(order_sp, x))
+            }
             dataend$申办方 <- factor(dataend$申办方, levels=order_sp)
             
             outdata <- list(dataend,order_sp)
@@ -105,7 +112,7 @@ server <- function(input, output) {
         sponsor <- as.data.frame(order_sp)
         
         #Get color
-        sponsor_col <- merge(sponsor, top10_cols, by.x = "order_sp", by.y = "top10", all.x = T, sort = F) 
+        sponsor_col <- merge(sponsor, top_cols, by.x = "order_sp", by.y = "top", all.x = T, sort = F) 
         
         #assign color
         sp_colna_n <- length(sponsor_col[is.na(sponsor_col$cols),1])
