@@ -69,8 +69,10 @@ server <- function(input, output) {
     #color
     color <- reactive({     
         
+        
         #Get sponsor
-        sponsor <- as.data.frame(dataset()[[2]])
+        order_sp <- dataset()[[2]]
+        sponsor <- as.data.frame(order_sp)
         
         #Get color
         sponsor_col <- merge(sponsor, top10_cols, by.x = "order_sp", by.y = "top10", all.x = T, sort = F) 
