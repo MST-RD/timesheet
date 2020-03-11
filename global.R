@@ -13,7 +13,7 @@ top  <- c("艾伯维", "Eli Lilly and Company", "Vertex", "嘉和生物", "卡�
             "基石", "上海海和药物研究开发有限公司", "强生", "亿腾", "RD", "MST_Standards", 
             "Overhead", "Leave")
 cols <- c("royalblue4", "red", "blue4", "skyblue4", "green4", 
-          "darkred", "palegreen4", "deepskyblue4", "sandybrown", "mediumpurple4", "purple4"
+          "darkred", "palegreen4", "deepskyblue4", "sandybrown", "mediumpurple4", "purple4",
           "dimgray","darkgray")
 top_cols <- data.frame(top,cols, stringsAsFactors = F)
 
