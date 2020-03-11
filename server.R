@@ -26,15 +26,51 @@ server <- function(input, output) {
     # 2. Its output type is a plot
     output$boxPlot <- renderPlot({
         
-        #Top9 sponsor and "not bill hour" specified color
-        top10  <- c("艾伯维", "Eli Lilly and Company", "Vertex", "嘉和生物", "卡德蒙", 
-                    "基石", "上海海和药物研究开发有限公司", "强生", "not Bill hour", "亿腾")
-        cols <- c("royalblue4", "red", "blue4", "skyblue4", "green4", 
-                  "darkred", "palegreen4", "deepskyblue4", "dimgray", "sandybrown")
-        top10_cols <- data.frame(top10,cols, stringsAsFactors = F)
-
+        ggplot(dataset()[[1]], aes(x=中文名, fill=申办方, weight=工时)) + geom_bar(stat="count", position = "stack") +
+            geom_text(stat='count',aes(label=..count..), position=position_stack(0.5)) +
+            scale_y_continuous(breaks=breaks_width(ybreak())) +
+            guides(fill = guide_legend(reverse = T)) +
+            theme(text = element_text(family = 'simhei', face = "bold"),legend.text = element_text(size=10))+
+            labs(fill="Sponsor") + ylab("Hour") + xlab(NULL) + coord_flip() +
+            theme(axis.text.x = element_text(size = 12),axis.text.y = element_text(size = 12)) +
+            geom_hline(yintercept = 40, linetype="dashed") +
+            scale_fill_manual(values = color()) +
+            theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+            
+        
+        
+    })
+    #issue :breaks_width(8) or 40, 如果加上了取8或者取40的判断，则不需要expand = c(0,0)
+    
+    #动态创建个数据框
+    dataset <- reactive({
+        readdata <- read_excel(input$xlsx$datapath)
+        #处理申办方为NA的情况
+        
+        order_sp <- c('not Bill hour',sort(unique(readdata$申办方)))
+        readdata$申办方[is.na(readdata$申办方)] <- 'not Bill hour'  
+        
+        #cnames=paste("x",1:length(readdata),sep="")
+        #colnames(readdata)=cnames
+        dataend <- readdata[which(readdata$人员组别==input$datasetSelector),]
+        outdata <- list(dataend,order_sp)
+        return(outdata)
+        
+    })
+    
+    #根据Y轴最大值来判断坐标间隔
+    ybreak <- reactive({
+        sumhour <- aggregate(dataset()[[1]]$工时, list(中文名 = dataset()[[1]]$中文名), sum)
+        maxhour <- max(sumhour$x)
+        if (maxhour>80) {return(40)}
+        else {return(8)}
+    })
+    
+    #color
+    color <- reactive({     
+        
         #Get sponsor
-        sponsor <- as.data.frame(order_sp)
+        sponsor <- as.data.frame(dataset()[[2]])
         
         #Get color
         sponsor_col <- merge(sponsor, top10_cols, by.x = "order_sp", by.y = "top10", all.x = T, sort = F) 
@@ -48,46 +84,9 @@ server <- function(input, output) {
         sponsor_col$order_sp <- factor(sponsor_col$order_sp,level=rev(order_sp))
         sponsor_col <- sponsor_col[order(sponsor_col$order_sp),]
         col <- sponsor_col$cols
-        
-        
-        ggplot(dataset(), aes(x=中文名, fill=申办方, weight=工时)) + geom_bar(stat="count", position = "stack") +
-            geom_text(stat='count',aes(label=..count..), position=position_stack(0.5)) +
-            scale_y_continuous(breaks=breaks_width(ybreak())) +
-            guides(fill = guide_legend(reverse = T)) +
-            theme(text = element_text(family = 'simhei', face = "bold"),legend.text = element_text(size=10))+
-            labs(fill="Sponsor") + ylab("Hour") + xlab(NULL) + coord_flip() +
-            theme(axis.text.x = element_text(size = 12),axis.text.y = element_text(size = 12)) +
-            geom_hline(yintercept = 40, linetype="dashed") +
-            scale_fill_manual(values = col) +
-            theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
-            
-        
-        
-    })
-    #issue :breaks_width(8) or 40, 如果加上了取8或者取40的判断，则不需要expand = c(0,0)
-    
-    #动态创建个数据框
-    dataset <- reactive({
-        readdata <- read_excel(input$xlsx$datapath)
-        
-        #处理申办方为NA的情况
-        order_sp <- c('not Bill hour',sort(unique(readdata$申办方)))
-        readdata$申办方[is.na(readdata$申办方)] <- 'not Bill hour'
-                 
-        #cnames=paste("x",1:length(readdata),sep="")
-        #colnames(readdata)=cnames
-        dataend <- readdata[which(readdata$人员组别==input$datasetSelector),]
-        return(dataend)
-        
-    })
-    
-    #根据Y轴最大值来判断坐标间隔
-    ybreak <- reactive({
-        sumhour <- aggregate(dataset()$工时, list(中文名 = dataset()$中文名), sum)
-        maxhour <- max(sumhour$x)
-        if (maxhour>80) {return(40)}
-        else {return(8)}
-    })
+        return(col)
+
+        })
     
     
     #动态创建个链表
