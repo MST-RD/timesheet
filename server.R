@@ -150,7 +150,7 @@ server <- function(input, output) {
         ggplot(dataset()[[1]], aes(x=中文名, fill=申办方, weight=工时)) + geom_bar(stat="count", position = "stack") +
             scale_y_continuous(breaks=breaks_width(ybreak())) +
             guides(fill = guide_legend(reverse = T)) +
-            theme(text = element_text(family = 'simhei', face = "bold"),legend.text = element_text(size=10))+
+            theme(text = element_text(family = 'simhei', face = "bold"),legend.text = element_text(size=10),legend.position="bottom")+
             labs(fill="Sponsor") + ylab("Hour") + xlab(NULL) + coord_flip() +
             theme(axis.text.x = element_text(size = 12),axis.text.y = element_text(size = 12)) +
             geom_hline(yintercept = 40, linetype="dashed") +
